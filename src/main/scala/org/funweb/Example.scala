@@ -8,7 +8,7 @@ object ExampleServer {
     val router = new Router(
       (FixedRoute("GET", "/"), (request: Request) => new HtmlResponse("<html><body>homepage</body></html>"))
       :: (RegexRoute("GET", "/person/([A-Za-z0-9]+)/profile", List("username")), (request: Request) => new TextResponse("hello, " + request.routeParam("username")))
-      :: (FixedRoute("GET", "/README"), (request: Request) => new FileResponse(new File("tronada/README")))
+      :: (FixedRoute("GET", "/README"), (request: Request) => new FileResponse(new File("README")))
       :: Nil
     )
 
