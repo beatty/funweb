@@ -1,0 +1,29 @@
+Funweb is a purely functional web programming toolkit for Scala. Request handlers are specified as '(Request) => Response' function literals.
+
+Current Features
+================
+ - Request and Response API
+ - HTTP request dispatching framework, with regular expression routes and fixed routes supported out of the box. User-defined routing rules are possible.
+ - A Jetty handler that dispatches requests to request handler functions
+ - Various convenience classes for building typical responses, such as text/html, redirects, 404, 500, etc.
+ 
+Upcoming Features
+=================
+ - Async support with Jetty and Scala 2.8 continuations
+
+Example
+=======
+object ExampleServer {
+  def main(args: Array[String]) {
+    val router = new Router(
+      (FixedRoute("GET", "/"), (request: Request) => new HtmlResponse("<html><body>homepage</body></html>"))
+      :: (RegexRoute("GET", "/person/([A-Za-z0-9]+)/profile", List("username")), (request: Request) => new TextResponse("hello, " + request.routeParam("username")))
+      :: (FixedRoute("GET", "/README"), (request: Request) => new FileResponse(new File("tronada/README")))
+      :: Nil
+    )
+
+    val server = new Server(9999);
+    server.setHandler(new FunwebJettyHandler(router));
+    server.start();
+  }
+}
