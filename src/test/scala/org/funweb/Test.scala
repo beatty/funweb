@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import scala.collection.mutable.Stack
 
 case class MockRequest(val method: String, val path: String) extends SkinnyRequest {
-  def queryParameter(name: String) = None
+  def queryParam(name: String) = Some("")
   def header(name: String) = None  
 }
 

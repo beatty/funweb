@@ -11,7 +11,7 @@ import java.io.{FileInputStream, File, InputStream, OutputStream}
 trait SkinnyRequest {
   def method: String
   def path: String
-  def queryParameter(name: String): Option[String]
+  def queryParam(name: String): Option[String]
   def header(name: String): Option[String]  
 }
 
@@ -20,16 +20,15 @@ trait SkinnyRequest {
  * TODO: add request entity support, probably uses Commons FileUpload
  */
 trait Request {
-  def route(): Route
-  def routeInfo(): RouteInfo
-  def routeParam(name: String): String = routeInfo.param(name)
+  def method: String
+  def path: String  
+  def fullUrl: String
+  def routeParam(name: String): String
+  def queryParam(name: String): Option[String]
+  def formParam(name: String): Option[String]
   def header(name: String): Option[String]
   def cookie(name: String): Option[Cookie]
-  def queryParameter(name: String): Option[String]
-  def formParameter(name: String): Option[String]
-  def method: String
-  def fullUrl(): String
-  def path: String  
+  def route: Route
 }
 
 /**
@@ -39,6 +38,25 @@ trait Response {
   def status(): Status
   def headerOps(): List[HeaderOp]
   def body(): Option[Body]
+}
+
+/**
+ * An HTTP cookie
+ */
+trait Cookie {
+  def name: String
+  def path: String
+  //def expires: Long
+  def comment: String
+  def domain: String
+  def maxAge: Int
+  def secure: Boolean
+  def version: Int
+  //val httponly: Boolean // ?? see http://docs.python.org/library/cookie.html
+}
+
+trait HeaderOp {
+  def execute(response: HttpServletResponse): Unit
 }
 
 /**
@@ -120,25 +138,6 @@ class FileBody(f: File) extends InputStreamBody(new FileInputStream(f)) {
     val len = f.length
     if (len <= Integer.MAX_VALUE) Some(len.asInstanceOf[Int]) else None
   }
-}
-
-/**
- * An HTTP cookie
- */
-trait Cookie {
-  def name: String
-  def path: String
-  //def expires: Long
-  def comment: String
-  def domain: String
-  def maxAge: Int
-  def secure: Boolean
-  def version: Int
-  //val httponly: Boolean // ?? see http://docs.python.org/library/cookie.html
-}
-
-trait HeaderOp {
-  def execute(response: HttpServletResponse): Unit
 }
 
 class AddCookie(val name: String, val value: String) extends HeaderOp {

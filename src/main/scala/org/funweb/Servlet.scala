@@ -8,16 +8,16 @@ import javax.servlet.http.HttpServletRequest
  * AMockRequest Request object that largely delegates to an HttpServletRequest
  */
 private class ServletBackedRequest(private val request: HttpServletRequest) extends SkinnyRequest with Request {
-  private var _routeInfo: Option[RouteInfo] = None
-  private var _route: Option[Route] = None  
+  private var routeInfoOption: Option[RouteInfo] = None
+  private var routeOption: Option[Route] = None  
   private val noPostDispatchException = new IllegalStateException("postDispatch() has not been called")
 
-  def routeInfo(): RouteInfo = _routeInfo.getOrElse(throw noPostDispatchException)
-  def route(): Route = _route.getOrElse(throw noPostDispatchException)
+  def route = routeOption.getOrElse(throw noPostDispatchException)
+  def method = request.getMethod
 
-  def method(): String = request.getMethod
-  
-  def queryParameter(name: String): Option[String] = {
+  def routeParam(name: String) = routeInfoOption.getOrElse(throw noPostDispatchException).param(name)
+
+  def queryParam(name: String): Option[String] = {
     if (method != "GET") throw new IllegalStateException("only GET methods have query parameters")
     request.getParameter(name) match {
       case null => None
@@ -25,7 +25,7 @@ private class ServletBackedRequest(private val request: HttpServletRequest) exte
     }
   }
   
-  def formParameter(name: String): Option[String] = {
+  def formParam(name: String): Option[String] = {
     if (method != "POST" && method != "PUT") throw new IllegalStateException("only POST and PUT methods have form parameters")
     request.getParameter(name) match {
       case null => None
@@ -53,9 +53,9 @@ private class ServletBackedRequest(private val request: HttpServletRequest) exte
   /**
    *
    */  
-  def postDispatch(route: Route, routeInfo: RouteInfo) {
-    this._route = Some(route)
-    this._routeInfo = Some(routeInfo)
+  def postDispatch(route: Route, routeInfoOption: RouteInfo) {
+    this.routeOption = Some(route)
+    this.routeInfoOption = Some(routeInfoOption)
   }
 }
 
