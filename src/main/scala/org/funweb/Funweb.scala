@@ -35,9 +35,15 @@ trait Request {
  * An HTTP response, consisting of a status, a list of header operations (such as 'add header', 'remove cookie', etc.), and a body
  */
 trait Response {
-  def status(): Status
-  def headerOps(): List[HeaderOp]
-  def body(): Option[Body]
+  def status: Status
+  def headerOps: List[HeaderOp]
+  def body: Option[Body]
+}
+
+class ContinueResponse(val handler: (Request)=>Response) extends Response {
+  def status = throw new UnsupportedOperationException()
+  def headerOps = throw new UnsupportedOperationException()
+  def body = throw new UnsupportedOperationException()
 }
 
 /**

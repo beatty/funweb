@@ -53,9 +53,9 @@ private class ServletBackedRequest(private val request: HttpServletRequest) exte
   /**
    *
    */  
-  def postDispatch(route: Route, routeInfoOption: RouteInfo) {
+  def postDispatch(route: Route, routeInfo: RouteInfo) {
     this.routeOption = Some(route)
-    this.routeInfoOption = Some(routeInfoOption)
+    this.routeInfoOption = Some(routeInfo)
   }
 }
 
